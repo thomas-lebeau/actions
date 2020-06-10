@@ -6360,7 +6360,7 @@ async function run() {
             id = data.id;
         }
         core$1.debug(
-            `Updating check-run ${name} with { title: ${title}, status: ${data.status}, conclusion: ${conclusion} }`
+            `Updating check-run ${name} with { title: ${title}, status: ${status}, conclusion: ${conclusion} }`
         );
 
         const { data } = await update(id, {
