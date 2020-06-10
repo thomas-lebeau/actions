@@ -1,7 +1,7 @@
 {
   "name": "javascript-action",
   "version": "1.0.0",
-  "description": "",
+  "description": "monorepo of github actions",
   "scripts": {
     "build": "rollup -c"
   },
