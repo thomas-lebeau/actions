@@ -20,7 +20,6 @@ export const CONCLUSION = {
     FAILURE: 'failure',
     NEUTRAL: 'neutral',
     CANCELLED: 'cancelled',
-    SKIPPED: 'skipped',
     TIMED_OUT: 'timed_out',
     ACTION_REQUIRED: 'action_required',
 };
@@ -43,7 +42,10 @@ export function get(check_run_id) {
     });
 }
 
-export function update(check_run_id, { title = '', summary = '', text, status, conclusion }) {
+export function update(
+    check_run_id,
+    { title = '', summary = '', text, status, conclusion }
+) {
     const options = {};
     const output = {
         title,

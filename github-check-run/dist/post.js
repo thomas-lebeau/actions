@@ -6322,12 +6322,14 @@ const CONCLUSION = {
     FAILURE: 'failure',
     NEUTRAL: 'neutral',
     CANCELLED: 'cancelled',
-    SKIPPED: 'skipped',
     TIMED_OUT: 'timed_out',
     ACTION_REQUIRED: 'action_required',
 };
 
-function update(check_run_id, { title = '', summary = '', text, status, conclusion }) {
+function update(
+    check_run_id,
+    { title = '', summary = '', text, status, conclusion }
+) {
     const options = {};
     const output = {
         title,
@@ -6355,9 +6357,14 @@ async function run() {
         const { id, status } = JSON.parse(core$1.getState(name) || '{}');
 
         if (status !== STATUS.COMPLETED) {
-            const conclusion = status === STATUS.QUEUED ? CONCLUSION.SKIPPED : CONCLUSION.FAILURE;
+            const conclusion =
+                status === STATUS.QUEUED
+                    ? CONCLUSION.CANCELLED
+                    : CONCLUSION.FAILURE;
 
-            core$1.debug(`Completing check-run ${name} with conclusion ${conclusion}`);
+            core$1.debug(
+                `Completing check-run ${name} with conclusion ${conclusion}`
+            );
 
             await update(id, {
                 title: name,

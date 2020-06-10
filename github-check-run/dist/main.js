@@ -6317,7 +6317,10 @@ function create(name, head_sha = headSha) {
     });
 }
 
-function update(check_run_id, { title = '', summary = '', text, status, conclusion }) {
+function update(
+    check_run_id,
+    { title = '', summary = '', text, status, conclusion }
+) {
     const options = {};
     const output = {
         title,

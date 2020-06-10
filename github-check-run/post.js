@@ -7,9 +7,14 @@ async function run() {
         const { id, status } = JSON.parse(core.getState(name) || '{}');
 
         if (status !== STATUS.COMPLETED) {
-            const conclusion = status === STATUS.QUEUED ? CONCLUSION.SKIPPED : CONCLUSION.FAILURE;
+            const conclusion =
+                status === STATUS.QUEUED
+                    ? CONCLUSION.CANCELLED
+                    : CONCLUSION.FAILURE;
 
-            core.debug(`Completing check-run ${name} with conclusion ${conclusion}`);
+            core.debug(
+                `Completing check-run ${name} with conclusion ${conclusion}`
+            );
 
             await update(id, {
                 title: name,
