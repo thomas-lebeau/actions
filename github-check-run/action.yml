@@ -26,6 +26,6 @@ outputs:
 
 runs:
     using: 'node12'
-    pre: 'github-check-run/dist/pre.js'
-    main: 'github-check-run/dist/main.js'
-    post: 'github-check-run/dist/post.js'
+    pre: 'dist/pre.js'
+    main: 'dist/main.js'
+    post: 'dist/post.js'
