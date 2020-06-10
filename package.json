@@ -1,0 +1,46 @@
+{
+  "name": "javascript-action",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^13.0.0",
+    "@rollup/plugin-node-resolve": "^8.0.1",
+    "builtin-modules": "^3.1.0",
+    "eslint": "^6.8.0",
+    "globby": "^11.0.1",
+    "husky": "^4.2.5",
+    "jest": "^24.9.0",
+    "lerna": "^3.22.1",
+    "rollup": "^2.15.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run build && git add packages/*/dist/"
+    }
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "commonjs": true,
+      "es6": true,
+      "node": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "sourceType": "module"
+    },
+    "rules": {}
+  },
+  "eslintIgnore": [
+    "dist"
+  ]
+}

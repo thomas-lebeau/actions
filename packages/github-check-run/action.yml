@@ -1,0 +1,31 @@
+name: 'Github check run'
+description: 'Wait a designated number of milliseconds'
+
+inputs:
+    github_token:
+        description: 'number of milliseconds to wait'
+        required: true
+    name:
+        description: 'number of milliseconds to wait'
+        required: true
+    title:
+        description: 'number of milliseconds to wait'
+        required: true
+    text:
+        description: 'number of milliseconds to wait'
+    status:
+        description: 'number of milliseconds to wait'
+    summary:
+        description: 'number of milliseconds to wait'
+    conclusion:
+        description: 'number of milliseconds to wait'
+
+outputs:
+    check_run_id:
+        description: 'The message to output'
+
+runs:
+    using: 'node12'
+    pre: 'dist/pre.js'
+    main: 'dist/main.js'
+    post: 'dist/post.js'
