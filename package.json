@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "monorepo of github actions",
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "test": "lerna run test"
   },
   "license": "MIT",
   "devDependencies": {
@@ -19,7 +20,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run build && git add packages/*/dist/"
+      "pre-commit": "npm run build && git add ./*/dist/"
     }
   },
   "prettier": {

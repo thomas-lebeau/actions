@@ -16,7 +16,7 @@ const getConfig = ({ path, name }) => ({
 });
 
 export default globby
-    .sync('packages/*/*.js')
+    .sync('*/*.js')
     .map((file) => entryPointRegex.exec(file))
     .map((matches) => matches.groups)
     .map(getConfig);
