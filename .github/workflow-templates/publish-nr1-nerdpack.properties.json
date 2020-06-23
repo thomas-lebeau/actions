@@ -1,0 +1,6 @@
+{
+  "name": "Publish nr1 nerdpack",
+  "description": "Publish and deploy nr1 nerdpack",
+  "iconName": "new-relic",
+  "filePatterns": ["nr1.json$"]
+}

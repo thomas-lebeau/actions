@@ -1,0 +1,69 @@
+name: master-build
+
+on:
+    push:
+        branches: [master]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - uses: actions/setup-node@v2-beta
+              with:
+                  node-version: 14
+
+            - name: Start deployment
+              id: deployment
+              uses: bobheadxi/deployments@v0.4.1
+              with:
+                  step: start
+                  env: staging
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - uses: actions/cache@v2
+              with:
+                  path: ~/.npm
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: ${{ runner.os }}-node-
+
+            - run: npm ci
+
+            - run: npm test
+
+            - name: Bump version
+              id: bump-version
+              run: |
+                  git config --global user.name "github-actions[bot]"
+                  git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  git checkout master
+                  npm version minor
+                  git add -A
+                  git push
+                  git push --tags
+                  echo ::set-output name=version::$(jq -r .version package.json)
+
+            - name: Setup nr1 cli
+              run: curl -s https://cli.nr-ext.net/installer.sh | sudo bash
+
+            - name: Publish
+              env:
+                  NR1_API_KEY: ${{ secrets.NR1_API_KEY }}
+                  NR1_REGION: staging
+              run: |
+                  nr1 version
+                  nr1 nerdpack:publish
+                  nr1 nerdpack:info
+
+            - name: Update deployment status
+              uses: bobheadxi/deployments@v0.4.1
+              if: always()
+              with:
+                  step: finish
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  status: ${{ job.status }}
+                  deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+                  env_url: https://one.newrelic.com/
+                  desc: v${{ steps.bump-version.outputs.version }}

@@ -1,0 +1,50 @@
+name: pr-build
+
+on:
+    pull_request:
+        branches: [master]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - uses: actions/setup-node@v2-beta
+              with:
+                  node-version: 14
+
+            - uses: actions/cache@v2
+              with:
+                  path: ~/.npm
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: ${{ runner.os }}-node-
+
+            - run: npm ci
+
+            - run: npm test
+
+            - name: Setup nr1 cli
+              run: curl -s https://cli.nr-ext.net/installer.sh | sudo bash
+
+            - name: Build
+              env:
+                  NR1_API_KEY: ${{ secrets.NR1_API_KEY }}
+                  NR1_REGION: staging
+              run: |
+                  nr1 version
+                  nr1 nerdpack:validate
+                  nr1 nerdpack:build
+
+            - name: Size limit
+              id: size-limit
+              run: node scripts/size-limit.mjs
+
+            - uses: thomas-lebeau/actions/github-check-run@master
+              with:
+                  name: size-limit
+                  title: ${{ steps.size-limit.outputs.total_size }}
+                  text: ${{ steps.size-limit.outputs.report_md }}
+                  conclusion: ${{ steps.size-limit.outputs.conclusion }}
+                  github_token: ${{ secrets.GITHUB_TOKEN }}

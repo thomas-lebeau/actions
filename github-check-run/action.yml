@@ -6,19 +6,23 @@ inputs:
         description: 'number of milliseconds to wait'
         required: true
     name:
-        description: 'number of milliseconds to wait'
+        description: The name of the check. For example, "code-coverage"
         required: true
     title:
-        description: 'number of milliseconds to wait'
+        description: The title of the check run
         required: true
     text:
-        description: 'number of milliseconds to wait'
+        description: The details of the check run. This parameter supports Markdown.
     status:
-        description: 'number of milliseconds to wait'
+        description: 'The current status. Can be one of `queued`, `in_progress`,
+        or `completed`. Default: `in_progress`'
     summary:
         description: 'number of milliseconds to wait'
     conclusion:
-        description: 'number of milliseconds to wait'
+        description: 'Required if you provide a status of
+        `completed`. The final conclusion of the check. Can be one of `success`,
+        `failure`, `neutral`, `cancelled`, `skipped`, `timed_out`. Note: Providing
+        conclusion will automatically set the status parameter to completed.'
 
 outputs:
     check_run_id:

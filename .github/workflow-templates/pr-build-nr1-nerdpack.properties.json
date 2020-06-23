@@ -1,0 +1,6 @@
+{
+  "name": "PR build - nr1 nerdpack",
+  "description": "PR build workflow for nr1 nerdpack",
+  "iconName": "new-relic",
+  "filePatterns": ["nr1.json$"]
+}
