@@ -6887,7 +6887,7 @@ function update(
 
 async function setStatus(
     name,
-    { title, text, status, summary, conclusion }
+    { title, text, status = STATUS.COMPLETED, summary, conclusion }
 ) {
     try {
         let { id } = JSON.parse(core$1.getState(name) || '{}');
@@ -8334,7 +8334,7 @@ async function sizeLimit() {
 
 async function run() {
     try {
-        const { conclusion, report, totalSize } = sizeLimit();
+        const { conclusion, report, totalSize } = await sizeLimit();
 
         await setStatus(NAME, {
             title: totalSize,
