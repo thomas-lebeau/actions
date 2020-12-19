@@ -45,14 +45,14 @@ const printTable = (rows) => rows.map(printRow).join('\n');
 
 function createReport(data) {
     const titles = Object.keys(data[0])
-        .map((key) => schema[key]?.title)
+        .map((key) => schema[key] && schema[key].title)
         .filter(Boolean);
 
     const separators = new Array(titles.length).fill('---');
 
     const rows = data.map((bundle) =>
         Object.entries(bundle)
-            .map(([k, v]) => schema[k]?.transform(v))
+            .map(([k, v]) => schema[k] && schema[k].transform(v))
             .filter(Boolean)
     );
 

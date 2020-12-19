@@ -1,49 +1,58 @@
 'use strict';
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var os = _interopDefault(require('os'));
-var fs = _interopDefault(require('fs'));
-var path = _interopDefault(require('path'));
-var http = _interopDefault(require('http'));
-var https = _interopDefault(require('https'));
+var require$$0 = require('os');
+var require$$0$1 = require('fs');
+var require$$1 = require('path');
+var http = require('http');
+var https = require('https');
 require('net');
-var tls = _interopDefault(require('tls'));
-var events = _interopDefault(require('events'));
+var tls = require('tls');
+var events = require('events');
 require('assert');
-var util = _interopDefault(require('util'));
-var Stream = _interopDefault(require('stream'));
-var Url = _interopDefault(require('url'));
-var zlib = _interopDefault(require('zlib'));
+var util = require('util');
+var Stream = require('stream');
+var Url = require('url');
+var zlib = require('zlib');
+
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var require$$0__default = /*#__PURE__*/_interopDefaultLegacy(require$$0);
+var require$$0__default$1 = /*#__PURE__*/_interopDefaultLegacy(require$$0$1);
+var require$$1__default = /*#__PURE__*/_interopDefaultLegacy(require$$1);
+var http__default = /*#__PURE__*/_interopDefaultLegacy(http);
+var https__default = /*#__PURE__*/_interopDefaultLegacy(https);
+var tls__default = /*#__PURE__*/_interopDefaultLegacy(tls);
+var events__default = /*#__PURE__*/_interopDefaultLegacy(events);
+var util__default = /*#__PURE__*/_interopDefaultLegacy(util);
+var Stream__default = /*#__PURE__*/_interopDefaultLegacy(Stream);
+var Url__default = /*#__PURE__*/_interopDefaultLegacy(Url);
+var zlib__default = /*#__PURE__*/_interopDefaultLegacy(zlib);
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
-function unwrapExports (x) {
-	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+function getAugmentedNamespace(n) {
+	if (n.__esModule) return n;
+	var a = Object.defineProperty({}, '__esModule', {value: true});
+	Object.keys(n).forEach(function (k) {
+		var d = Object.getOwnPropertyDescriptor(n, k);
+		Object.defineProperty(a, k, d.get ? d : {
+			enumerable: true,
+			get: function () {
+				return n[k];
+			}
+		});
+	});
+	return a;
 }
 
-function createCommonjsModule(fn, basedir, module) {
-	return module = {
-	  path: basedir,
-	  exports: {},
-	  require: function (path, base) {
-      return commonjsRequire(path, (base === undefined || base === null) ? module.path : base);
-    }
-	}, fn(module, module.exports), module.exports;
+function createCommonjsModule(fn) {
+  var module = { exports: {} };
+	return fn(module, module.exports), module.exports;
 }
 
-function getCjsExportFromNamespace (n) {
-	return n && n['default'] || n;
-}
-
-function commonjsRequire () {
-	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
-}
-
-var utils = createCommonjsModule(function (module, exports) {
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
-Object.defineProperty(exports, "__esModule", { value: true });
+
 /**
  * Sanitizes an input into a string so it can be passed into issueCommand safely
  * @param input input to sanitize into a string
@@ -57,11 +66,13 @@ function toCommandValue(input) {
     }
     return JSON.stringify(input);
 }
-exports.toCommandValue = toCommandValue;
+var toCommandValue_1 = toCommandValue;
 
-});
 
-var command = createCommonjsModule(function (module, exports) {
+var utils = /*#__PURE__*/Object.defineProperty({
+	toCommandValue: toCommandValue_1
+}, '__esModule', {value: true});
+
 var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -69,8 +80,8 @@ var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (
     result["default"] = mod;
     return result;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-const os$1 = __importStar(os);
+
+const os = __importStar(require$$0__default['default']);
 
 /**
  * Commands
@@ -84,13 +95,13 @@ const os$1 = __importStar(os);
  */
 function issueCommand(command, properties, message) {
     const cmd = new Command(command, properties, message);
-    process.stdout.write(cmd.toString() + os$1.EOL);
+    process.stdout.write(cmd.toString() + os.EOL);
 }
-exports.issueCommand = issueCommand;
+var issueCommand_1 = issueCommand;
 function issue(name, message = '') {
     issueCommand(name, {}, message);
 }
-exports.issue = issue;
+var issue_1 = issue;
 const CMD_STRING = '::';
 class Command {
     constructor(command, properties, message) {
@@ -140,38 +151,44 @@ function escapeProperty(s) {
         .replace(/,/g, '%2C');
 }
 
-});
 
-var fileCommand = createCommonjsModule(function (module, exports) {
+var command = /*#__PURE__*/Object.defineProperty({
+	issueCommand: issueCommand_1,
+	issue: issue_1
+}, '__esModule', {value: true});
+
 // For internal use, subject to change.
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
+var __importStar$1 = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
     if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
     result["default"] = mod;
     return result;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const fs$1 = __importStar(fs);
-const os$1 = __importStar(os);
+const fs = __importStar$1(require$$0__default$1['default']);
+const os$1 = __importStar$1(require$$0__default['default']);
 
-function issueCommand(command, message) {
+function issueCommand$1(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
         throw new Error(`Unable to find environment variable for file command ${command}`);
     }
-    if (!fs$1.existsSync(filePath)) {
+    if (!fs.existsSync(filePath)) {
         throw new Error(`Missing file at path: ${filePath}`);
     }
-    fs$1.appendFileSync(filePath, `${utils.toCommandValue(message)}${os$1.EOL}`, {
+    fs.appendFileSync(filePath, `${utils.toCommandValue(message)}${os$1.EOL}`, {
         encoding: 'utf8'
     });
 }
-exports.issueCommand = issueCommand;
+var issueCommand_1$1 = issueCommand$1;
 
-});
+
+var fileCommand = /*#__PURE__*/Object.defineProperty({
+	issueCommand: issueCommand_1$1
+}, '__esModule', {value: true});
 
 var core = createCommonjsModule(function (module, exports) {
 var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -194,8 +211,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 
 
-const os$1 = __importStar(os);
-const path$1 = __importStar(path);
+const os = __importStar(require$$0__default['default']);
+const path = __importStar(require$$1__default['default']);
 /**
  * The code to exit an action
  */
@@ -225,7 +242,7 @@ function exportVariable(name, val) {
     const filePath = process.env['GITHUB_ENV'] || '';
     if (filePath) {
         const delimiter = '_GitHubActionsFileCommandDelimeter_';
-        const commandValue = `${name}<<${delimiter}${os$1.EOL}${convertedVal}${os$1.EOL}${delimiter}`;
+        const commandValue = `${name}<<${delimiter}${os.EOL}${convertedVal}${os.EOL}${delimiter}`;
         fileCommand.issueCommand('ENV', commandValue);
     }
     else {
@@ -253,7 +270,7 @@ function addPath(inputPath) {
     else {
         command.issueCommand('add-path', {}, inputPath);
     }
-    process.env['PATH'] = `${inputPath}${path$1.delimiter}${process.env['PATH']}`;
+    process.env['PATH'] = `${inputPath}${path.delimiter}${process.env['PATH']}`;
 }
 exports.addPath = addPath;
 /**
@@ -343,7 +360,7 @@ exports.warning = warning;
  * @param message info message
  */
 function info(message) {
-    process.stdout.write(message + os$1.EOL);
+    process.stdout.write(message + os.EOL);
 }
 exports.info = info;
 /**
@@ -413,17 +430,14 @@ exports.getState = getState;
 
 });
 
-var core$1 = /*@__PURE__*/unwrapExports(core);
-
-var utils$1 = createCommonjsModule(function (module, exports) {
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
-Object.defineProperty(exports, "__esModule", { value: true });
+
 /**
  * Sanitizes an input into a string so it can be passed into issueCommand safely
  * @param input input to sanitize into a string
  */
-function toCommandValue(input) {
+function toCommandValue$1(input) {
     if (input === null || input === undefined) {
         return '';
     }
@@ -432,20 +446,22 @@ function toCommandValue(input) {
     }
     return JSON.stringify(input);
 }
-exports.toCommandValue = toCommandValue;
+var toCommandValue_1$1 = toCommandValue$1;
 
-});
 
-var command$1 = createCommonjsModule(function (module, exports) {
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
+var utils$1 = /*#__PURE__*/Object.defineProperty({
+	toCommandValue: toCommandValue_1$1
+}, '__esModule', {value: true});
+
+var __importStar$2 = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
     if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
     result["default"] = mod;
     return result;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-const os$1 = __importStar(os);
+
+const os$2 = __importStar$2(require$$0__default['default']);
 
 /**
  * Commands
@@ -457,17 +473,17 @@ const os$1 = __importStar(os);
  *   ::warning::This is the message
  *   ::set-env name=MY_VAR::some value
  */
-function issueCommand(command, properties, message) {
-    const cmd = new Command(command, properties, message);
-    process.stdout.write(cmd.toString() + os$1.EOL);
+function issueCommand$2(command, properties, message) {
+    const cmd = new Command$1(command, properties, message);
+    process.stdout.write(cmd.toString() + os$2.EOL);
 }
-exports.issueCommand = issueCommand;
-function issue(name, message = '') {
-    issueCommand(name, {}, message);
+var issueCommand_1$2 = issueCommand$2;
+function issue$1(name, message = '') {
+    issueCommand$2(name, {}, message);
 }
-exports.issue = issue;
-const CMD_STRING = '::';
-class Command {
+var issue_1$1 = issue$1;
+const CMD_STRING$1 = '::';
+class Command$1 {
     constructor(command, properties, message) {
         if (!command) {
             command = 'missing.command';
@@ -477,7 +493,7 @@ class Command {
         this.message = message;
     }
     toString() {
-        let cmdStr = CMD_STRING + this.command;
+        let cmdStr = CMD_STRING$1 + this.command;
         if (this.properties && Object.keys(this.properties).length > 0) {
             cmdStr += ' ';
             let first = true;
@@ -491,22 +507,22 @@ class Command {
                         else {
                             cmdStr += ',';
                         }
-                        cmdStr += `${key}=${escapeProperty(val)}`;
+                        cmdStr += `${key}=${escapeProperty$1(val)}`;
                     }
                 }
             }
         }
-        cmdStr += `${CMD_STRING}${escapeData(this.message)}`;
+        cmdStr += `${CMD_STRING$1}${escapeData$1(this.message)}`;
         return cmdStr;
     }
 }
-function escapeData(s) {
+function escapeData$1(s) {
     return utils$1.toCommandValue(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A');
 }
-function escapeProperty(s) {
+function escapeProperty$1(s) {
     return utils$1.toCommandValue(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
@@ -515,24 +531,27 @@ function escapeProperty(s) {
         .replace(/,/g, '%2C');
 }
 
-});
 
-var fileCommand$1 = createCommonjsModule(function (module, exports) {
+var command$1 = /*#__PURE__*/Object.defineProperty({
+	issueCommand: issueCommand_1$2,
+	issue: issue_1$1
+}, '__esModule', {value: true});
+
 // For internal use, subject to change.
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
+var __importStar$3 = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
     if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
     result["default"] = mod;
     return result;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const fs$1 = __importStar(fs);
-const os$1 = __importStar(os);
+const fs$1 = __importStar$3(require$$0__default$1['default']);
+const os$3 = __importStar$3(require$$0__default['default']);
 
-function issueCommand(command, message) {
+function issueCommand$3(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
         throw new Error(`Unable to find environment variable for file command ${command}`);
@@ -540,15 +559,18 @@ function issueCommand(command, message) {
     if (!fs$1.existsSync(filePath)) {
         throw new Error(`Missing file at path: ${filePath}`);
     }
-    fs$1.appendFileSync(filePath, `${utils$1.toCommandValue(message)}${os$1.EOL}`, {
+    fs$1.appendFileSync(filePath, `${utils$1.toCommandValue(message)}${os$3.EOL}`, {
         encoding: 'utf8'
     });
 }
-exports.issueCommand = issueCommand;
+var issueCommand_1$3 = issueCommand$3;
 
-});
 
-var core$2 = createCommonjsModule(function (module, exports) {
+var fileCommand$1 = /*#__PURE__*/Object.defineProperty({
+	issueCommand: issueCommand_1$3
+}, '__esModule', {value: true});
+
+var core$1 = createCommonjsModule(function (module, exports) {
 var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -569,8 +591,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 
 
-const os$1 = __importStar(os);
-const path$1 = __importStar(path);
+const os = __importStar(require$$0__default['default']);
+const path = __importStar(require$$1__default['default']);
 /**
  * The code to exit an action
  */
@@ -600,7 +622,7 @@ function exportVariable(name, val) {
     const filePath = process.env['GITHUB_ENV'] || '';
     if (filePath) {
         const delimiter = '_GitHubActionsFileCommandDelimeter_';
-        const commandValue = `${name}<<${delimiter}${os$1.EOL}${convertedVal}${os$1.EOL}${delimiter}`;
+        const commandValue = `${name}<<${delimiter}${os.EOL}${convertedVal}${os.EOL}${delimiter}`;
         fileCommand$1.issueCommand('ENV', commandValue);
     }
     else {
@@ -628,7 +650,7 @@ function addPath(inputPath) {
     else {
         command$1.issueCommand('add-path', {}, inputPath);
     }
-    process.env['PATH'] = `${inputPath}${path$1.delimiter}${process.env['PATH']}`;
+    process.env['PATH'] = `${inputPath}${path.delimiter}${process.env['PATH']}`;
 }
 exports.addPath = addPath;
 /**
@@ -718,7 +740,7 @@ exports.warning = warning;
  * @param message info message
  */
 function info(message) {
-    process.stdout.write(message + os$1.EOL);
+    process.stdout.write(message + os.EOL);
 }
 exports.info = info;
 /**
@@ -788,8 +810,6 @@ exports.getState = getState;
 
 });
 
-var core$3 = /*@__PURE__*/unwrapExports(core$2);
-
 var context = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Context = void 0;
@@ -802,12 +822,12 @@ class Context {
     constructor() {
         this.payload = {};
         if (process.env.GITHUB_EVENT_PATH) {
-            if (fs.existsSync(process.env.GITHUB_EVENT_PATH)) {
-                this.payload = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, { encoding: 'utf8' }));
+            if (require$$0__default$1['default'].existsSync(process.env.GITHUB_EVENT_PATH)) {
+                this.payload = JSON.parse(require$$0__default$1['default'].readFileSync(process.env.GITHUB_EVENT_PATH, { encoding: 'utf8' }));
             }
             else {
                 const path = process.env.GITHUB_EVENT_PATH;
-                process.stdout.write(`GITHUB_EVENT_PATH ${path} does not exist${os.EOL}`);
+                process.stdout.write(`GITHUB_EVENT_PATH ${path} does not exist${require$$0__default['default'].EOL}`);
             }
         }
         this.eventName = process.env.GITHUB_EVENT_NAME;
@@ -839,8 +859,6 @@ exports.Context = Context;
 
 });
 
-var proxy = createCommonjsModule(function (module, exports) {
-Object.defineProperty(exports, "__esModule", { value: true });
 function getProxyUrl(reqUrl) {
     let usingSsl = reqUrl.protocol === 'https:';
     let proxyUrl;
@@ -859,7 +877,7 @@ function getProxyUrl(reqUrl) {
     }
     return proxyUrl;
 }
-exports.getProxyUrl = getProxyUrl;
+var getProxyUrl_1 = getProxyUrl;
 function checkBypass(reqUrl) {
     if (!reqUrl.hostname) {
         return false;
@@ -895,8 +913,12 @@ function checkBypass(reqUrl) {
     }
     return false;
 }
-exports.checkBypass = checkBypass;
-});
+var checkBypass_1 = checkBypass;
+
+var proxy = /*#__PURE__*/Object.defineProperty({
+	getProxyUrl: getProxyUrl_1,
+	checkBypass: checkBypass_1
+}, '__esModule', {value: true});
 
 var httpOverHttp_1 = httpOverHttp;
 var httpsOverHttp_1 = httpsOverHttp;
@@ -906,13 +928,13 @@ var httpsOverHttps_1 = httpsOverHttps;
 
 function httpOverHttp(options) {
   var agent = new TunnelingAgent(options);
-  agent.request = http.request;
+  agent.request = http__default['default'].request;
   return agent;
 }
 
 function httpsOverHttp(options) {
   var agent = new TunnelingAgent(options);
-  agent.request = http.request;
+  agent.request = http__default['default'].request;
   agent.createSocket = createSecureSocket;
   agent.defaultPort = 443;
   return agent;
@@ -920,13 +942,13 @@ function httpsOverHttp(options) {
 
 function httpOverHttps(options) {
   var agent = new TunnelingAgent(options);
-  agent.request = https.request;
+  agent.request = https__default['default'].request;
   return agent;
 }
 
 function httpsOverHttps(options) {
   var agent = new TunnelingAgent(options);
-  agent.request = https.request;
+  agent.request = https__default['default'].request;
   agent.createSocket = createSecureSocket;
   agent.defaultPort = 443;
   return agent;
@@ -937,7 +959,7 @@ function TunnelingAgent(options) {
   var self = this;
   self.options = options || {};
   self.proxyOptions = self.options.proxy || {};
-  self.maxSockets = self.options.maxSockets || http.Agent.defaultMaxSockets;
+  self.maxSockets = self.options.maxSockets || http__default['default'].Agent.defaultMaxSockets;
   self.requests = [];
   self.sockets = [];
 
@@ -957,7 +979,7 @@ function TunnelingAgent(options) {
     self.removeSocket(socket);
   });
 }
-util.inherits(TunnelingAgent, events.EventEmitter);
+util__default['default'].inherits(TunnelingAgent, events__default['default'].EventEmitter);
 
 TunnelingAgent.prototype.addRequest = function addRequest(req, host, port, localAddress) {
   var self = this;
@@ -1101,7 +1123,7 @@ function createSecureSocket(options, cb) {
     });
 
     // 0 is dummy port for v0.6
-    var secureSocket = tls.connect(0, tlsOptions);
+    var secureSocket = tls__default['default'].connect(0, tlsOptions);
     self.sockets[self.sockets.indexOf(socket)] = secureSocket;
     cb(secureSocket);
   });
@@ -1525,7 +1547,7 @@ class HttpClient {
         const info = {};
         info.parsedUrl = requestUrl;
         const usingSsl = info.parsedUrl.protocol === 'https:';
-        info.httpModule = usingSsl ? https : http;
+        info.httpModule = usingSsl ? https__default['default'] : http__default['default'];
         const defaultPort = usingSsl ? 443 : 80;
         info.options = {};
         info.options.host = info.parsedUrl.hostname;
@@ -1580,7 +1602,7 @@ class HttpClient {
         const usingSsl = parsedUrl.protocol === 'https:';
         let maxSockets = 100;
         if (!!this.requestOptions) {
-            maxSockets = this.requestOptions.maxSockets || http.globalAgent.maxSockets;
+            maxSockets = this.requestOptions.maxSockets || http__default['default'].globalAgent.maxSockets;
         }
         if (useProxy) {
             // If using proxy, need tunnel
@@ -1610,12 +1632,12 @@ class HttpClient {
         // if reusing agent across request and tunneling agent isn't assigned create a new agent
         if (this._keepAlive && !agent) {
             const options = { keepAlive: this._keepAlive, maxSockets: maxSockets };
-            agent = usingSsl ? new https.Agent(options) : new http.Agent(options);
+            agent = usingSsl ? new https__default['default'].Agent(options) : new http__default['default'].Agent(options);
             this._agent = agent;
         }
         // if not using private agent and tunnel agent isn't setup then use global agent
         if (!agent) {
-            agent = usingSsl ? https.globalAgent : http.globalAgent;
+            agent = usingSsl ? https__default['default'].globalAgent : http__default['default'].globalAgent;
         }
         if (usingSsl && this._ignoreSslError) {
             // we don't want to set NODE_TLS_REJECT_UNAUTHORIZED=0 since that will affect request for entire process
@@ -2361,7 +2383,7 @@ function isPlainObject$1(o) {
 // Based on https://github.com/tmpvar/jsdom/blob/aa85b2abf07766ff7bf5c1f6daafb3726f2f2db5/lib/jsdom/living/blob.js
 
 // fix for "Readable" isn't a named export issue
-const Readable = Stream.Readable;
+const Readable = Stream__default['default'].Readable;
 
 const BUFFER = Symbol('buffer');
 const TYPE = Symbol('type');
@@ -2513,7 +2535,7 @@ try {
 const INTERNALS = Symbol('Body internals');
 
 // fix an issue where "PassThrough" isn't a named export for node <10
-const PassThrough = Stream.PassThrough;
+const PassThrough = Stream__default['default'].PassThrough;
 
 /**
  * Body mixin
@@ -2546,7 +2568,7 @@ function Body(body) {
 	} else if (ArrayBuffer.isView(body)) {
 		// body is ArrayBufferView
 		body = Buffer.from(body.buffer, body.byteOffset, body.byteLength);
-	} else if (body instanceof Stream) ; else {
+	} else if (body instanceof Stream__default['default']) ; else {
 		// none of the above
 		// coerce to string then buffer
 		body = Buffer.from(String(body));
@@ -2559,7 +2581,7 @@ function Body(body) {
 	this.size = size;
 	this.timeout = timeout;
 
-	if (body instanceof Stream) {
+	if (body instanceof Stream__default['default']) {
 		body.on('error', function (err) {
 			const error = err.name === 'AbortError' ? err : new FetchError(`Invalid response body while trying to fetch ${_this.url}: ${err.message}`, 'system', err);
 			_this[INTERNALS].error = error;
@@ -2715,7 +2737,7 @@ function consumeBody() {
 	}
 
 	// istanbul ignore if: should never happen
-	if (!(body instanceof Stream)) {
+	if (!(body instanceof Stream__default['default'])) {
 		return Body.Promise.resolve(Buffer.alloc(0));
 	}
 
@@ -2888,7 +2910,7 @@ function clone(instance) {
 
 	// check that body is a stream and not form-data object
 	// note: we can't clone the form-data object without having it as a dependency
-	if (body instanceof Stream && typeof body.getBoundary !== 'function') {
+	if (body instanceof Stream__default['default'] && typeof body.getBoundary !== 'function') {
 		// tee instance body
 		p1 = new PassThrough();
 		p2 = new PassThrough();
@@ -2936,7 +2958,7 @@ function extractContentType(body) {
 	} else if (typeof body.getBoundary === 'function') {
 		// detect form data input from form-data module
 		return `multipart/form-data;boundary=${body.getBoundary()}`;
-	} else if (body instanceof Stream) {
+	} else if (body instanceof Stream__default['default']) {
 		// body is stream
 		// can't really do much about this
 		return null;
@@ -3390,7 +3412,7 @@ function createHeadersLenient(obj) {
 const INTERNALS$1 = Symbol('Response internals');
 
 // fix an issue where "STATUS_CODES" aren't a named export for node <10
-const STATUS_CODES = http.STATUS_CODES;
+const STATUS_CODES = http__default['default'].STATUS_CODES;
 
 /**
  * Response class
@@ -3491,10 +3513,10 @@ Object.defineProperty(Response.prototype, Symbol.toStringTag, {
 const INTERNALS$2 = Symbol('Request internals');
 
 // fix an issue where "format", "parse" aren't a named export for node <10
-const parse_url = Url.parse;
-const format_url = Url.format;
+const parse_url = Url__default['default'].parse;
+const format_url = Url__default['default'].format;
 
-const streamDestructionSupported = 'destroy' in Stream.Readable.prototype;
+const streamDestructionSupported = 'destroy' in Stream__default['default'].Readable.prototype;
 
 /**
  * Check if a value is an instance of Request.
@@ -3657,7 +3679,7 @@ function getNodeRequestOptions(request) {
 		throw new TypeError('Only HTTP(S) protocols are supported');
 	}
 
-	if (request.signal && request.body instanceof Stream.Readable && !streamDestructionSupported) {
+	if (request.signal && request.body instanceof Stream__default['default'].Readable && !streamDestructionSupported) {
 		throw new Error('Cancellation of streamed requests with AbortSignal is not supported in node < 8');
 	}
 
@@ -3732,8 +3754,8 @@ AbortError.prototype.constructor = AbortError;
 AbortError.prototype.name = 'AbortError';
 
 // fix an issue where "PassThrough", "resolve" aren't a named export for node <10
-const PassThrough$1 = Stream.PassThrough;
-const resolve_url = Url.resolve;
+const PassThrough$1 = Stream__default['default'].PassThrough;
+const resolve_url = Url__default['default'].resolve;
 
 /**
  * Fetch function
@@ -3757,7 +3779,7 @@ function fetch(url, opts) {
 		const request = new Request(url, opts);
 		const options = getNodeRequestOptions(request);
 
-		const send = (options.protocol === 'https:' ? https : http).request;
+		const send = (options.protocol === 'https:' ? https__default['default'] : http__default['default']).request;
 		const signal = request.signal;
 
 		let response = null;
@@ -3765,7 +3787,7 @@ function fetch(url, opts) {
 		const abort = function abort() {
 			let error = new AbortError('The user aborted a request.');
 			reject(error);
-			if (request.body && request.body instanceof Stream.Readable) {
+			if (request.body && request.body instanceof Stream__default['default'].Readable) {
 				request.body.destroy(error);
 			}
 			if (!response || !response.body) return;
@@ -3929,13 +3951,13 @@ function fetch(url, opts) {
 			// by common browsers.
 			// Always using Z_SYNC_FLUSH is what cURL does.
 			const zlibOptions = {
-				flush: zlib.Z_SYNC_FLUSH,
-				finishFlush: zlib.Z_SYNC_FLUSH
+				flush: zlib__default['default'].Z_SYNC_FLUSH,
+				finishFlush: zlib__default['default'].Z_SYNC_FLUSH
 			};
 
 			// for gzip
 			if (codings == 'gzip' || codings == 'x-gzip') {
-				body = body.pipe(zlib.createGunzip(zlibOptions));
+				body = body.pipe(zlib__default['default'].createGunzip(zlibOptions));
 				response = new Response(body, response_options);
 				resolve(response);
 				return;
@@ -3949,9 +3971,9 @@ function fetch(url, opts) {
 				raw.once('data', function (chunk) {
 					// see http://stackoverflow.com/questions/37519828
 					if ((chunk[0] & 0x0F) === 0x08) {
-						body = body.pipe(zlib.createInflate());
+						body = body.pipe(zlib__default['default'].createInflate());
 					} else {
-						body = body.pipe(zlib.createInflateRaw());
+						body = body.pipe(zlib__default['default'].createInflateRaw());
 					}
 					response = new Response(body, response_options);
 					resolve(response);
@@ -3960,8 +3982,8 @@ function fetch(url, opts) {
 			}
 
 			// for br
-			if (codings == 'br' && typeof zlib.createBrotliDecompress === 'function') {
-				body = body.pipe(zlib.createBrotliDecompress());
+			if (codings == 'br' && typeof zlib__default['default'].createBrotliDecompress === 'function') {
+				body = body.pipe(zlib__default['default'].createBrotliDecompress());
 				response = new Response(body, response_options);
 				resolve(response);
 				return;
@@ -6711,11 +6733,11 @@ var distWeb$2 = /*#__PURE__*/Object.freeze({
 	paginateRest: paginateRest
 });
 
-var core_1 = getCjsExportFromNamespace(distWeb);
+var core_1 = /*@__PURE__*/getAugmentedNamespace(distWeb);
 
-var plugin_rest_endpoint_methods_1 = getCjsExportFromNamespace(distWeb$1);
+var plugin_rest_endpoint_methods_1 = /*@__PURE__*/getAugmentedNamespace(distWeb$1);
 
-var plugin_paginate_rest_1 = getCjsExportFromNamespace(distWeb$2);
+var plugin_paginate_rest_1 = /*@__PURE__*/getAugmentedNamespace(distWeb$2);
 
 var utils$3 = createCommonjsModule(function (module, exports) {
 var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
@@ -6811,12 +6833,10 @@ exports.getOctokit = getOctokit;
 
 });
 
-var github$1 = /*@__PURE__*/unwrapExports(github);
+const githubToken = core$1.getInput('github_token', { required: true });
+const { pull_request, repository } = github.context.payload;
 
-const githubToken = core$3.getInput('github_token', { required: true });
-const { pull_request, repository } = github$1.context.payload;
-
-const octokit = new github$1.getOctokit(githubToken, { log: console });
+const octokit = new github.getOctokit(githubToken, { log: console });
 const headSha = pull_request.head.sha;
 const owner = repository.owner.login;
 const repo = repository.name;
@@ -6839,16 +6859,16 @@ function create(name, head_sha = headSha) {
 
 async function init(name) {
     try {
-        core$3.debug(`Creating check-run ${name}`);
+        core$1.debug(`Creating check-run ${name}`);
 
         const { data } = await create(name);
 
-        core$3.saveState(name, {
+        core$1.saveState(name, {
             id: data.id,
             status: data.status,
         });
     } catch (error) {
-        core$3.setFailed(error.message);
+        core$1.setFailed(error.message);
     }
 }
 
@@ -6858,7 +6878,7 @@ async function run() {
     try {
         init(NAME);
     } catch (error) {
-        core$1.setFailed(error.message);
+        core.setFailed(error.message);
     }
 }
 
