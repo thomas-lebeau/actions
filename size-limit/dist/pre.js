@@ -3,8 +3,8 @@
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var os = _interopDefault(require('os'));
-var path = _interopDefault(require('path'));
 var fs = _interopDefault(require('fs'));
+var path = _interopDefault(require('path'));
 var http = _interopDefault(require('http'));
 var https = _interopDefault(require('https'));
 require('net');
@@ -40,6 +40,27 @@ function commonjsRequire () {
 	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
 }
 
+var utils = createCommonjsModule(function (module, exports) {
+// We use any as a valid input type
+/* eslint-disable @typescript-eslint/no-explicit-any */
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Sanitizes an input into a string so it can be passed into issueCommand safely
+ * @param input input to sanitize into a string
+ */
+function toCommandValue(input) {
+    if (input === null || input === undefined) {
+        return '';
+    }
+    else if (typeof input === 'string' || input instanceof String) {
+        return input;
+    }
+    return JSON.stringify(input);
+}
+exports.toCommandValue = toCommandValue;
+
+});
+
 var command = createCommonjsModule(function (module, exports) {
 var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
@@ -50,6 +71,7 @@ var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const os$1 = __importStar(os);
+
 /**
  * Commands
  *
@@ -103,34 +125,51 @@ class Command {
         return cmdStr;
     }
 }
-/**
- * Sanitizes an input into a string so it can be passed into issueCommand safely
- * @param input input to sanitize into a string
- */
-function toCommandValue(input) {
-    if (input === null || input === undefined) {
-        return '';
-    }
-    else if (typeof input === 'string' || input instanceof String) {
-        return input;
-    }
-    return JSON.stringify(input);
-}
-exports.toCommandValue = toCommandValue;
 function escapeData(s) {
-    return toCommandValue(s)
+    return utils.toCommandValue(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A');
 }
 function escapeProperty(s) {
-    return toCommandValue(s)
+    return utils.toCommandValue(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A')
         .replace(/:/g, '%3A')
         .replace(/,/g, '%2C');
 }
+
+});
+
+var fileCommand = createCommonjsModule(function (module, exports) {
+// For internal use, subject to change.
+var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+// We use any as a valid input type
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const fs$1 = __importStar(fs);
+const os$1 = __importStar(os);
+
+function issueCommand(command, message) {
+    const filePath = process.env[`GITHUB_${command}`];
+    if (!filePath) {
+        throw new Error(`Unable to find environment variable for file command ${command}`);
+    }
+    if (!fs$1.existsSync(filePath)) {
+        throw new Error(`Missing file at path: ${filePath}`);
+    }
+    fs$1.appendFileSync(filePath, `${utils.toCommandValue(message)}${os$1.EOL}`, {
+        encoding: 'utf8'
+    });
+}
+exports.issueCommand = issueCommand;
 
 });
 
@@ -152,6 +191,8 @@ var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+
+
 
 const os$1 = __importStar(os);
 const path$1 = __importStar(path);
@@ -179,9 +220,17 @@ var ExitCode;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function exportVariable(name, val) {
-    const convertedVal = command.toCommandValue(val);
+    const convertedVal = utils.toCommandValue(val);
     process.env[name] = convertedVal;
-    command.issueCommand('set-env', { name }, convertedVal);
+    const filePath = process.env['GITHUB_ENV'] || '';
+    if (filePath) {
+        const delimiter = '_GitHubActionsFileCommandDelimeter_';
+        const commandValue = `${name}<<${delimiter}${os$1.EOL}${convertedVal}${os$1.EOL}${delimiter}`;
+        fileCommand.issueCommand('ENV', commandValue);
+    }
+    else {
+        command.issueCommand('set-env', { name }, convertedVal);
+    }
 }
 exports.exportVariable = exportVariable;
 /**
@@ -197,7 +246,13 @@ exports.setSecret = setSecret;
  * @param inputPath
  */
 function addPath(inputPath) {
-    command.issueCommand('add-path', {}, inputPath);
+    const filePath = process.env['GITHUB_PATH'] || '';
+    if (filePath) {
+        fileCommand.issueCommand('PATH', inputPath);
+    }
+    else {
+        command.issueCommand('add-path', {}, inputPath);
+    }
     process.env['PATH'] = `${inputPath}${path$1.delimiter}${process.env['PATH']}`;
 }
 exports.addPath = addPath;
@@ -360,7 +415,7 @@ exports.getState = getState;
 
 var core$1 = /*@__PURE__*/unwrapExports(core);
 
-var utils = createCommonjsModule(function (module, exports) {
+var utils$1 = createCommonjsModule(function (module, exports) {
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -446,13 +501,13 @@ class Command {
     }
 }
 function escapeData(s) {
-    return utils.toCommandValue(s)
+    return utils$1.toCommandValue(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A');
 }
 function escapeProperty(s) {
-    return utils.toCommandValue(s)
+    return utils$1.toCommandValue(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A')
@@ -462,7 +517,7 @@ function escapeProperty(s) {
 
 });
 
-var fileCommand = createCommonjsModule(function (module, exports) {
+var fileCommand$1 = createCommonjsModule(function (module, exports) {
 // For internal use, subject to change.
 var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
@@ -485,7 +540,7 @@ function issueCommand(command, message) {
     if (!fs$1.existsSync(filePath)) {
         throw new Error(`Missing file at path: ${filePath}`);
     }
-    fs$1.appendFileSync(filePath, `${utils.toCommandValue(message)}${os$1.EOL}`, {
+    fs$1.appendFileSync(filePath, `${utils$1.toCommandValue(message)}${os$1.EOL}`, {
         encoding: 'utf8'
     });
 }
@@ -540,13 +595,13 @@ var ExitCode;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function exportVariable(name, val) {
-    const convertedVal = utils.toCommandValue(val);
+    const convertedVal = utils$1.toCommandValue(val);
     process.env[name] = convertedVal;
     const filePath = process.env['GITHUB_ENV'] || '';
     if (filePath) {
         const delimiter = '_GitHubActionsFileCommandDelimeter_';
         const commandValue = `${name}<<${delimiter}${os$1.EOL}${convertedVal}${os$1.EOL}${delimiter}`;
-        fileCommand.issueCommand('ENV', commandValue);
+        fileCommand$1.issueCommand('ENV', commandValue);
     }
     else {
         command$1.issueCommand('set-env', { name }, convertedVal);
@@ -568,7 +623,7 @@ exports.setSecret = setSecret;
 function addPath(inputPath) {
     const filePath = process.env['GITHUB_PATH'] || '';
     if (filePath) {
-        fileCommand.issueCommand('PATH', inputPath);
+        fileCommand$1.issueCommand('PATH', inputPath);
     }
     else {
         command$1.issueCommand('add-path', {}, inputPath);
@@ -1644,7 +1699,7 @@ class HttpClient {
 exports.HttpClient = HttpClient;
 });
 
-var utils$1 = createCommonjsModule(function (module, exports) {
+var utils$2 = createCommonjsModule(function (module, exports) {
 var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -6662,7 +6717,7 @@ var plugin_rest_endpoint_methods_1 = getCjsExportFromNamespace(distWeb$1);
 
 var plugin_paginate_rest_1 = getCjsExportFromNamespace(distWeb$2);
 
-var utils$2 = createCommonjsModule(function (module, exports) {
+var utils$3 = createCommonjsModule(function (module, exports) {
 var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -6685,7 +6740,7 @@ var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getOctokitOptions = exports.GitHub = exports.context = void 0;
 const Context = __importStar(context);
-const Utils = __importStar(utils$1);
+const Utils = __importStar(utils$2);
 // octokit + plugins
 
 
@@ -6750,7 +6805,7 @@ exports.context = new Context.Context();
  * @param     options  other options to set
  */
 function getOctokit(token, options) {
-    return new utils$2.GitHub(utils$2.getOctokitOptions(token, options));
+    return new utils$3.GitHub(utils$3.getOctokitOptions(token, options));
 }
 exports.getOctokit = getOctokit;
 
@@ -6772,71 +6827,39 @@ const STATUS = {
     COMPLETED: 'completed',
 };
 
-const CONCLUSION = {
-    SUCCESS: 'success',
-    FAILURE: 'failure',
-    NEUTRAL: 'neutral',
-    CANCELLED: 'cancelled',
-    TIMED_OUT: 'timed_out',
-    ACTION_REQUIRED: 'action_required',
-};
-
-function update(
-    check_run_id,
-    { title = '', summary = '', text, status, conclusion }
-) {
-    const options = {};
-    const output = {
-        title,
-        summary,
-    };
-
-    if (status) options.status = status;
-    if (conclusion) options.conclusion = conclusion;
-    if (!status && !conclusion) options.status = STATUS.IN_PROGRESS;
-
-    if (text) output.text = text;
-
-    return octokit.checks.update({
+function create(name, head_sha = headSha) {
+    return octokit.checks.create({
         owner,
         repo,
-        check_run_id,
-        ...options,
-        output,
+        name,
+        head_sha,
+        status: STATUS.QUEUED,
     });
 }
 
-async function end(name) {
+async function init(name) {
     try {
-        const { id, status } = JSON.parse(core$3.getState(name) || '{}');
+        core$3.debug(`Creating check-run ${name}`);
 
-        if (status !== STATUS.COMPLETED) {
-            const conclusion =
-                status === STATUS.QUEUED
-                    ? CONCLUSION.CANCELLED
-                    : CONCLUSION.FAILURE;
+        const { data } = await create(name);
 
-            core$3.debug(
-                `Completing check-run ${name} with conclusion ${conclusion}`
-            );
-
-            await update(id, {
-                title: name,
-                conclusion,
-            });
-        }
+        core$3.saveState(name, {
+            id: data.id,
+            status: data.status,
+        });
     } catch (error) {
         core$3.setFailed(error.message);
     }
 }
 
+const NAME = 'size-limit';
+
 async function run() {
     try {
-        const name = core$1.getInput('name', { required: true });
-
-        end(name);
+        init(NAME);
     } catch (error) {
         core$1.setFailed(error.message);
     }
 }
+
 run();

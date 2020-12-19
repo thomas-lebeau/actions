@@ -18,6 +18,11 @@
     "lerna": "^3.22.1",
     "rollup": "^2.15.0"
   },
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "@actions/exec": "^1.0.4",
+    "@actions/github": "^3.0.0"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "npm run build && git add ./*/dist/"

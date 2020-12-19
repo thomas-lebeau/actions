@@ -15,8 +15,11 @@ const getConfig = ({ path, name }) => ({
     external: builtins,
 });
 
+const isCommon = ({ path }) => !path.includes('common');
+
 export default globby
     .sync('*/{index,main,pre,post}.js')
     .map((file) => entryPointRegex.exec(file))
     .map((matches) => matches.groups)
+    .filter(isCommon)
     .map(getConfig);

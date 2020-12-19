@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import { update, create } from './utils/check-run';
+import { setStatus } from '../common/life-cycle';
 
 async function run() {
     try {
@@ -11,28 +11,12 @@ async function run() {
         const summary = core.getInput('summary');
         const conclusion = core.getInput('conclusion');
 
-        let { id } = JSON.parse(core.getState(name) || '{}');
-
-        if (!id) {
-            const { data } = await create(name);
-
-            id = data.id;
-        }
-        core.debug(
-            `Updating check-run ${name} with { title: ${title}, status: ${status}, conclusion: ${conclusion} }`
-        );
-
-        const { data } = await update(id, {
+        await setStatus(name, {
             title,
             text,
             status,
             summary,
             conclusion,
-        });
-
-        core.saveState(name, {
-            id: data.id,
-            status: data.status,
         });
     } catch (error) {
         core.setFailed(error.message);
