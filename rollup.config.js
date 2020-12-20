@@ -13,6 +13,11 @@ const getConfig = ({ path, name }) => ({
     },
     plugins: [resolve(), commonjs()],
     external: builtins,
+    onwarn(warning, warn) {
+        if (warning.code === 'UNUSED_EXTERNAL_IMPORT') return;
+
+        warn(warning);
+    },
 });
 
 const isCommon = ({ path }) => !path.includes('common');

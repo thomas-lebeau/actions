@@ -6826,7 +6826,7 @@ function update(
 
 async function setStatus(
     name,
-    { title, text, status = STATUS.COMPLETED, summary, conclusion }
+    { title, text, status, summary, conclusion }
 ) {
     try {
         let { id } = JSON.parse(core$1.getState(name) || '{}');

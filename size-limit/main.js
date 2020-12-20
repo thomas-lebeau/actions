@@ -5,7 +5,7 @@ import sizeLimit from './utils/size-limit';
 
 async function run() {
     try {
-        const { conclusion, report, totalSize } = sizeLimit();
+        const { conclusion, report, totalSize } = await sizeLimit();
 
         await setStatus(NAME, {
             title: totalSize,
