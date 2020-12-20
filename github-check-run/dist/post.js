@@ -6776,20 +6776,34 @@ exports.getOctokit = getOctokit;
 });
 
 const githubToken = core$1.getInput('github_token', { required: true });
-const { pull_request, repository } = github.context.payload;
 
-const octokit = new github.getOctokit(githubToken, { log: console });
-const headSha = pull_request.head.sha;
+let { payload, sha, ref } = github.context;
+
+const { pull_request, repository } = payload;
+
+const octokit = new github.getOctokit(githubToken, {
+    log: console,
+    previews: ['ant-man-preview', 'flash-preview'],
+});
+
+if (pull_request) {
+    sha = pull_request.head.sha;
+    ref = pull_request.head.ref;
+}
+
 const owner = repository.owner.login;
 const repo = repository.name;
 
-const STATUS = {
+core$1.debug('ENV = ' + JSON.stringify(process.env, null, 2));
+core$1.debug('github.context = ' + JSON.stringify(github.context, null, 2));
+
+const CHECK_STATUS = {
     QUEUED: 'queued',
     IN_PROGRESS: 'in_progress',
     COMPLETED: 'completed',
 };
 
-const CONCLUSION = {
+const CHECK_CONCLUSION = {
     SUCCESS: 'success',
     FAILURE: 'failure',
     NEUTRAL: 'neutral',
@@ -6798,7 +6812,7 @@ const CONCLUSION = {
     ACTION_REQUIRED: 'action_required',
 };
 
-function update(
+function updateCheck(
     check_run_id,
     { title = '', summary = '', text, status, conclusion }
 ) {
@@ -6810,7 +6824,7 @@ function update(
 
     if (status) options.status = status;
     if (conclusion) options.conclusion = conclusion;
-    if (!status && !conclusion) options.status = STATUS.IN_PROGRESS;
+    if (!status && !conclusion) options.status = CHECK_STATUS.IN_PROGRESS;
 
     if (text) output.text = text;
 
@@ -6827,17 +6841,17 @@ async function end(name) {
     try {
         const { id, status } = JSON.parse(core$1.getState(name) || '{}');
 
-        if (status !== STATUS.COMPLETED) {
+        if (status !== CHECK_STATUS.COMPLETED) {
             const conclusion =
-                status === STATUS.QUEUED
-                    ? CONCLUSION.CANCELLED
-                    : CONCLUSION.FAILURE;
+                status === CHECK_STATUS.QUEUED
+                    ? CHECK_CONCLUSION.CANCELLED
+                    : CHECK_CONCLUSION.FAILURE;
 
             core$1.debug(
                 `Completing check-run ${name} with conclusion ${conclusion}`
             );
 
-            await update(id, {
+            await updateCheck(id, {
                 title: name,
                 conclusion,
             });

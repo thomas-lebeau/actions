@@ -1,0 +1,27 @@
+name: 'Github Deployment status'
+description: 'Wait a designated number of milliseconds'
+
+inputs:
+    github_token:
+        description: 'number of milliseconds to wait'
+        required: true
+    ref:
+        description: The ref to deploy. This can be a branch, tag, or SHA.
+        required: false
+    auto_inactive:
+        required: false
+        default: true
+        description: Set auto_inactive (see https://developer.github.com/v3/repos/deployments/#inactive-deployments)
+    description:
+        required: false
+        description: Description to set in status
+    environment:
+        required: true
+        description: The name of the deployment environment for Github.
+    url:
+        required: false
+        description: The environment URL.
+
+runs:
+    using: 'node12'
+    main: 'dist/main.js'

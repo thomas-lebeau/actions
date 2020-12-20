@@ -6776,30 +6776,44 @@ exports.getOctokit = getOctokit;
 });
 
 const githubToken = core$1.getInput('github_token', { required: true });
-const { pull_request, repository } = github.context.payload;
 
-const octokit = new github.getOctokit(githubToken, { log: console });
-const headSha = pull_request.head.sha;
+let { payload, sha, ref } = github.context;
+
+const { pull_request, repository } = payload;
+
+const octokit = new github.getOctokit(githubToken, {
+    log: console,
+    previews: ['ant-man-preview', 'flash-preview'],
+});
+
+if (pull_request) {
+    sha = pull_request.head.sha;
+    ref = pull_request.head.ref;
+}
+
 const owner = repository.owner.login;
 const repo = repository.name;
 
-const STATUS = {
+core$1.debug('ENV = ' + JSON.stringify(process.env, null, 2));
+core$1.debug('github.context = ' + JSON.stringify(github.context, null, 2));
+
+const CHECK_STATUS = {
     QUEUED: 'queued',
     IN_PROGRESS: 'in_progress',
     COMPLETED: 'completed',
 };
 
-function create(name, head_sha = headSha) {
+function createCheck(name, head_sha = sha) {
     return octokit.checks.create({
         owner,
         repo,
         name,
         head_sha,
-        status: STATUS.QUEUED,
+        status: CHECK_STATUS.QUEUED,
     });
 }
 
-function update(
+function updateCheck(
     check_run_id,
     { title = '', summary = '', text, status, conclusion }
 ) {
@@ -6811,7 +6825,7 @@ function update(
 
     if (status) options.status = status;
     if (conclusion) options.conclusion = conclusion;
-    if (!status && !conclusion) options.status = STATUS.IN_PROGRESS;
+    if (!status && !conclusion) options.status = CHECK_STATUS.IN_PROGRESS;
 
     if (text) output.text = text;
 
@@ -6832,7 +6846,7 @@ async function setStatus(
         let { id } = JSON.parse(core$1.getState(name) || '{}');
 
         if (!id) {
-            const { data } = await create(name);
+            const { data } = await createCheck(name);
 
             id = data.id;
         }
@@ -6841,7 +6855,7 @@ async function setStatus(
             `Updating check-run ${name} with { title: ${title}, status: ${status}, conclusion: ${conclusion} }`
         );
 
-        const { data } = await update(id, {
+        const { data } = await updateCheck(id, {
             title,
             text,
             status,

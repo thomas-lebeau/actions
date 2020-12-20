@@ -1,11 +1,16 @@
 import * as core from '@actions/core';
-import { create, update, STATUS, CONCLUSION } from './service';
+import {
+    CHECK_CONCLUSION,
+    CHECK_STATUS,
+    createCheck,
+    updateCheck,
+} from './service';
 
 export async function init(name) {
     try {
         core.debug(`Creating check-run ${name}`);
 
-        const { data } = await create(name);
+        const { data } = await createCheck(name);
 
         core.saveState(name, {
             id: data.id,
@@ -24,7 +29,7 @@ export async function setStatus(
         let { id } = JSON.parse(core.getState(name) || '{}');
 
         if (!id) {
-            const { data } = await create(name);
+            const { data } = await createCheck(name);
 
             id = data.id;
         }
@@ -33,7 +38,7 @@ export async function setStatus(
             `Updating check-run ${name} with { title: ${title}, status: ${status}, conclusion: ${conclusion} }`
         );
 
-        const { data } = await update(id, {
+        const { data } = await updateCheck(id, {
             title,
             text,
             status,
@@ -54,17 +59,17 @@ export async function end(name) {
     try {
         const { id, status } = JSON.parse(core.getState(name) || '{}');
 
-        if (status !== STATUS.COMPLETED) {
+        if (status !== CHECK_STATUS.COMPLETED) {
             const conclusion =
-                status === STATUS.QUEUED
-                    ? CONCLUSION.CANCELLED
-                    : CONCLUSION.FAILURE;
+                status === CHECK_STATUS.QUEUED
+                    ? CHECK_CONCLUSION.CANCELLED
+                    : CHECK_CONCLUSION.FAILURE;
 
             core.debug(
                 `Completing check-run ${name} with conclusion ${conclusion}`
             );
 
-            await update(id, {
+            await updateCheck(id, {
                 title: name,
                 conclusion,
             });

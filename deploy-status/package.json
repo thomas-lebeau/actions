@@ -1,0 +1,15 @@
+{
+  "name": "deploy-status",
+  "version": "1.0.0",
+  "description": "> TODO: description",
+  "author": "Thomas Lebeau <lebeau.thomas@gmail.com>",
+  "homepage": "",
+  "license": "ISC",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "dependencies": {
+    "@actions/core": "^1.2.4",
+    "@actions/github": "^3.0.0"
+  }
+}
