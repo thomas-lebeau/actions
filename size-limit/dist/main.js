@@ -6855,8 +6855,13 @@ if (pull_request) {
 const owner = repository.owner.login;
 const repo = repository.name;
 
-core$1.debug('ENV = ' + JSON.stringify(process.env, null, 2));
-core$1.debug('github.context = ' + JSON.stringify(github.context, null, 2));
+core$1.startGroup('ENV');
+core$1.debug(JSON.stringify(process.env, null, 2));
+core$1.endGroup();
+
+core$1.startGroup('Github Context');
+core$1.debug(JSON.stringify(github.context, null, 2));
+core$1.endGroup();
 
 const CHECK_STATUS = {
     QUEUED: 'queued',
@@ -6876,7 +6881,7 @@ function createCheck(name, head_sha = sha) {
 
 function updateCheck(
     check_run_id,
-    { title = '', summary = '', text, status, conclusion }
+    { title = '', summary = '', text, status, conclusion, annotations }
 ) {
     const options = {};
     const output = {
@@ -6889,6 +6894,7 @@ function updateCheck(
     if (!status && !conclusion) options.status = CHECK_STATUS.IN_PROGRESS;
 
     if (text) output.text = text;
+    if (annotations) output.annotations = annotations;
 
     return octokit.checks.update({
         owner,
@@ -6901,7 +6907,7 @@ function updateCheck(
 
 async function setStatus(
     name,
-    { title, text, status, summary, conclusion }
+    { title, text, status, summary, conclusion, annotations }
 ) {
     try {
         let { id } = JSON.parse(core$1.getState(name) || '{}');
@@ -6922,6 +6928,7 @@ async function setStatus(
             status,
             summary,
             conclusion,
+            annotations,
         });
 
         core$1.saveState(name, {
@@ -6934,6 +6941,169 @@ async function setStatus(
 }
 
 const NAME = 'size-limit';
+
+/*!
+ * bytes
+ * Copyright(c) 2012-2014 TJ Holowaychuk
+ * Copyright(c) 2015 Jed Watson
+ * MIT Licensed
+ */
+
+/**
+ * Module exports.
+ * @public
+ */
+
+var bytes_1 = bytes;
+var format_1 = format;
+var parse_1 = parse$1;
+
+/**
+ * Module variables.
+ * @private
+ */
+
+var formatThousandsRegExp = /\B(?=(\d{3})+(?!\d))/g;
+
+var formatDecimalsRegExp = /(?:\.0*|(\.[^0]+)0+)$/;
+
+var map = {
+  b:  1,
+  kb: 1 << 10,
+  mb: 1 << 20,
+  gb: 1 << 30,
+  tb: Math.pow(1024, 4),
+  pb: Math.pow(1024, 5),
+};
+
+var parseRegExp = /^((-|\+)?(\d+(?:\.\d+)?)) *(kb|mb|gb|tb|pb)$/i;
+
+/**
+ * Convert the given value in bytes into a string or parse to string to an integer in bytes.
+ *
+ * @param {string|number} value
+ * @param {{
+ *  case: [string],
+ *  decimalPlaces: [number]
+ *  fixedDecimals: [boolean]
+ *  thousandsSeparator: [string]
+ *  unitSeparator: [string]
+ *  }} [options] bytes options.
+ *
+ * @returns {string|number|null}
+ */
+
+function bytes(value, options) {
+  if (typeof value === 'string') {
+    return parse$1(value);
+  }
+
+  if (typeof value === 'number') {
+    return format(value, options);
+  }
+
+  return null;
+}
+
+/**
+ * Format the given value in bytes into a string.
+ *
+ * If the value is negative, it is kept as such. If it is a float,
+ * it is rounded.
+ *
+ * @param {number} value
+ * @param {object} [options]
+ * @param {number} [options.decimalPlaces=2]
+ * @param {number} [options.fixedDecimals=false]
+ * @param {string} [options.thousandsSeparator=]
+ * @param {string} [options.unit=]
+ * @param {string} [options.unitSeparator=]
+ *
+ * @returns {string|null}
+ * @public
+ */
+
+function format(value, options) {
+  if (!Number.isFinite(value)) {
+    return null;
+  }
+
+  var mag = Math.abs(value);
+  var thousandsSeparator = (options && options.thousandsSeparator) || '';
+  var unitSeparator = (options && options.unitSeparator) || '';
+  var decimalPlaces = (options && options.decimalPlaces !== undefined) ? options.decimalPlaces : 2;
+  var fixedDecimals = Boolean(options && options.fixedDecimals);
+  var unit = (options && options.unit) || '';
+
+  if (!unit || !map[unit.toLowerCase()]) {
+    if (mag >= map.pb) {
+      unit = 'PB';
+    } else if (mag >= map.tb) {
+      unit = 'TB';
+    } else if (mag >= map.gb) {
+      unit = 'GB';
+    } else if (mag >= map.mb) {
+      unit = 'MB';
+    } else if (mag >= map.kb) {
+      unit = 'KB';
+    } else {
+      unit = 'B';
+    }
+  }
+
+  var val = value / map[unit.toLowerCase()];
+  var str = val.toFixed(decimalPlaces);
+
+  if (!fixedDecimals) {
+    str = str.replace(formatDecimalsRegExp, '$1');
+  }
+
+  if (thousandsSeparator) {
+    str = str.replace(formatThousandsRegExp, thousandsSeparator);
+  }
+
+  return str + unitSeparator + unit;
+}
+
+/**
+ * Parse the string value into an integer in bytes.
+ *
+ * If no unit is given, it is assumed the value is in bytes.
+ *
+ * @param {number|string} val
+ *
+ * @returns {number|null}
+ * @public
+ */
+
+function parse$1(val) {
+  if (typeof val === 'number' && !isNaN(val)) {
+    return val;
+  }
+
+  if (typeof val !== 'string') {
+    return null;
+  }
+
+  // Test if the string passed is valid
+  var results = parseRegExp.exec(val);
+  var floatValue;
+  var unit = 'b';
+
+  if (!results) {
+    // Nothing could be extracted from the given string
+    floatValue = parseInt(val, 10);
+    unit = 'b';
+  } else {
+    // Retrieve the value and the unit
+    floatValue = parseFloat(results[1]);
+    unit = results[4].toLowerCase();
+  }
+
+  return Math.floor(map[unit] * floatValue);
+}
+bytes_1.format = format_1;
+bytes_1.parse = parse_1;
 
 var ioUtil = createCommonjsModule(function (module, exports) {
 var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -8083,168 +8253,21 @@ var exec_1 = /*#__PURE__*/Object.defineProperty({
 	exec: exec_2
 }, '__esModule', {value: true});
 
-/*!
- * bytes
- * Copyright(c) 2012-2014 TJ Holowaychuk
- * Copyright(c) 2015 Jed Watson
- * MIT Licensed
- */
+async function cmd(cmd) {
+    let output = '';
 
-/**
- * Module exports.
- * @public
- */
+    const exitCode = await exec_1.exec(cmd, [], {
+        listeners: {
+            stdout: (data) => (output += data.toString()),
+        },
+        ignoreReturnCode: true,
+    });
 
-var bytes_1 = bytes;
-var format_1 = format;
-var parse_1 = parse$1;
-
-/**
- * Module variables.
- * @private
- */
-
-var formatThousandsRegExp = /\B(?=(\d{3})+(?!\d))/g;
-
-var formatDecimalsRegExp = /(?:\.0*|(\.[^0]+)0+)$/;
-
-var map = {
-  b:  1,
-  kb: 1 << 10,
-  mb: 1 << 20,
-  gb: 1 << 30,
-  tb: Math.pow(1024, 4),
-  pb: Math.pow(1024, 5),
-};
-
-var parseRegExp = /^((-|\+)?(\d+(?:\.\d+)?)) *(kb|mb|gb|tb|pb)$/i;
-
-/**
- * Convert the given value in bytes into a string or parse to string to an integer in bytes.
- *
- * @param {string|number} value
- * @param {{
- *  case: [string],
- *  decimalPlaces: [number]
- *  fixedDecimals: [boolean]
- *  thousandsSeparator: [string]
- *  unitSeparator: [string]
- *  }} [options] bytes options.
- *
- * @returns {string|number|null}
- */
-
-function bytes(value, options) {
-  if (typeof value === 'string') {
-    return parse$1(value);
-  }
-
-  if (typeof value === 'number') {
-    return format(value, options);
-  }
-
-  return null;
+    return {
+        exitCode,
+        data: JSON.parse(output),
+    };
 }
-
-/**
- * Format the given value in bytes into a string.
- *
- * If the value is negative, it is kept as such. If it is a float,
- * it is rounded.
- *
- * @param {number} value
- * @param {object} [options]
- * @param {number} [options.decimalPlaces=2]
- * @param {number} [options.fixedDecimals=false]
- * @param {string} [options.thousandsSeparator=]
- * @param {string} [options.unit=]
- * @param {string} [options.unitSeparator=]
- *
- * @returns {string|null}
- * @public
- */
-
-function format(value, options) {
-  if (!Number.isFinite(value)) {
-    return null;
-  }
-
-  var mag = Math.abs(value);
-  var thousandsSeparator = (options && options.thousandsSeparator) || '';
-  var unitSeparator = (options && options.unitSeparator) || '';
-  var decimalPlaces = (options && options.decimalPlaces !== undefined) ? options.decimalPlaces : 2;
-  var fixedDecimals = Boolean(options && options.fixedDecimals);
-  var unit = (options && options.unit) || '';
-
-  if (!unit || !map[unit.toLowerCase()]) {
-    if (mag >= map.pb) {
-      unit = 'PB';
-    } else if (mag >= map.tb) {
-      unit = 'TB';
-    } else if (mag >= map.gb) {
-      unit = 'GB';
-    } else if (mag >= map.mb) {
-      unit = 'MB';
-    } else if (mag >= map.kb) {
-      unit = 'KB';
-    } else {
-      unit = 'B';
-    }
-  }
-
-  var val = value / map[unit.toLowerCase()];
-  var str = val.toFixed(decimalPlaces);
-
-  if (!fixedDecimals) {
-    str = str.replace(formatDecimalsRegExp, '$1');
-  }
-
-  if (thousandsSeparator) {
-    str = str.replace(formatThousandsRegExp, thousandsSeparator);
-  }
-
-  return str + unitSeparator + unit;
-}
-
-/**
- * Parse the string value into an integer in bytes.
- *
- * If no unit is given, it is assumed the value is in bytes.
- *
- * @param {number|string} val
- *
- * @returns {number|null}
- * @public
- */
-
-function parse$1(val) {
-  if (typeof val === 'number' && !isNaN(val)) {
-    return val;
-  }
-
-  if (typeof val !== 'string') {
-    return null;
-  }
-
-  // Test if the string passed is valid
-  var results = parseRegExp.exec(val);
-  var floatValue;
-  var unit = 'b';
-
-  if (!results) {
-    // Nothing could be extracted from the given string
-    floatValue = parseInt(val, 10);
-    unit = 'b';
-  } else {
-    // Retrieve the value and the unit
-    floatValue = parseFloat(results[1]);
-    unit = results[4].toLowerCase();
-  }
-
-  return Math.floor(map[unit] * floatValue);
-}
-bytes_1.format = format_1;
-bytes_1.parse = parse_1;
 
 const CONCLUSION = {
     SUCCESS: 'success',
@@ -8305,22 +8328,6 @@ function createReport(data) {
     return `\n${printTable(table)}\n`;
 }
 
-async function cmd(cmd) {
-    let output = '';
-
-    const exitCode = await exec_1.exec(cmd, [], {
-        listeners: {
-            stdout: (data) => (output += data.toString()),
-        },
-        ignoreReturnCode: true,
-    });
-
-    return {
-        exitCode,
-        data: JSON.parse(output),
-    };
-}
-
 async function sizeLimit() {
     const { exitCode, data } = await cmd('npx size-limit --json');
 
@@ -8339,22 +8346,31 @@ async function sizeLimit() {
     console.log(report);
 
     return {
-        conclusion,
-        report,
-        data,
-        totalSize,
+        exitCode,
+        data: {
+            conclusion,
+            report,
+            data,
+            totalSize,
+        },
     };
 }
 
 async function run() {
     try {
-        const { conclusion, report, totalSize } = await sizeLimit();
+        const { exitCode, data } = await sizeLimit();
+        const { conclusion, report, totalSize } = data;
+        const continueOnFail = core.getInput('continue');
 
         await setStatus(NAME, {
             title: totalSize,
             text: report,
             conclusion,
         });
+
+        if (!continueOnFail && exitCode !== 0) {
+            core.setFailed('size over limit' + totalSize);
+        }
     } catch (error) {
         core.setFailed(error.message);
     }

@@ -6852,8 +6852,13 @@ if (pull_request) {
 const owner = repository.owner.login;
 const repo = repository.name;
 
-core$1.debug('ENV = ' + JSON.stringify(process.env, null, 2));
-core$1.debug('github.context = ' + JSON.stringify(github.context, null, 2));
+core$1.startGroup('ENV');
+core$1.debug(JSON.stringify(process.env, null, 2));
+core$1.endGroup();
+
+core$1.startGroup('Github Context');
+core$1.debug(JSON.stringify(github.context, null, 2));
+core$1.endGroup();
 
 const DEPLOYMENT_STATE = {
     ERROR: 'error',

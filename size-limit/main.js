@@ -5,13 +5,19 @@ import sizeLimit from './utils/size-limit';
 
 async function run() {
     try {
-        const { conclusion, report, totalSize } = await sizeLimit();
+        const { exitCode, data } = await sizeLimit();
+        const { conclusion, report, totalSize } = data;
+        const continueOnFail = core.getInput('continue');
 
         await setStatus(NAME, {
             title: totalSize,
             text: report,
             conclusion,
         });
+
+        if (!continueOnFail && exitCode !== 0) {
+            core.setFailed('size over limit' + totalSize);
+        }
     } catch (error) {
         core.setFailed(error.message);
     }

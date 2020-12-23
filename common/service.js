@@ -20,8 +20,13 @@ if (pull_request) {
 const owner = repository.owner.login;
 const repo = repository.name;
 
-core.debug('ENV = ' + JSON.stringify(process.env, null, 2));
-core.debug('github.context = ' + JSON.stringify(github.context, null, 2));
+core.startGroup('ENV');
+core.debug(JSON.stringify(process.env, null, 2));
+core.endGroup();
+
+core.startGroup('Github Context');
+core.debug(JSON.stringify(github.context, null, 2));
+core.endGroup();
 
 export const DEPLOYMENT_STATE = {
     ERROR: 'error',
@@ -100,7 +105,7 @@ export function getCheck(check_run_id) {
 
 export function updateCheck(
     check_run_id,
-    { title = '', summary = '', text, status, conclusion }
+    { title = '', summary = '', text, status, conclusion, annotations }
 ) {
     const options = {};
     const output = {
@@ -113,6 +118,7 @@ export function updateCheck(
     if (!status && !conclusion) options.status = CHECK_STATUS.IN_PROGRESS;
 
     if (text) output.text = text;
+    if (annotations) output.annotations = annotations;
 
     return octokit.checks.update({
         owner,

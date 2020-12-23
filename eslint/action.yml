@@ -1,10 +1,22 @@
-name: 'Github check run'
+name: 'Eslint'
 description: 'Wait a designated number of milliseconds'
 
 inputs:
     github_token:
         description: 'number of milliseconds to wait'
         required: true
+    extensions:
+        description: 'Specify JavaScript file extensions'
+        required: false,
+        default: js,jsx,mjs
+    files:
+        description: 'asds'
+        required: false,
+        default: '.'
+    quiet:
+        description: 'Report errors only'
+        required: false,
+        default: false
     continue:
         description: 'aesds'
         required: false,

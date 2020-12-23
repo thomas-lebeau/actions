@@ -23,7 +23,7 @@ export async function init(name) {
 
 export async function setStatus(
     name,
-    { title, text, status, summary, conclusion }
+    { title, text, status, summary, conclusion, annotations }
 ) {
     try {
         let { id } = JSON.parse(core.getState(name) || '{}');
@@ -44,6 +44,7 @@ export async function setStatus(
             status,
             summary,
             conclusion,
+            annotations,
         });
 
         core.saveState(name, {

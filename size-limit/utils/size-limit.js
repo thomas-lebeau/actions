@@ -1,5 +1,5 @@
-import exec from '@actions/exec';
 import bytes from 'bytes';
+import cmd from '../../common/cmd';
 
 const CONCLUSION = {
     SUCCESS: 'success',
@@ -60,22 +60,6 @@ function createReport(data) {
     return `\n${printTable(table)}\n`;
 }
 
-export async function cmd(cmd) {
-    let output = '';
-
-    const exitCode = await exec.exec(cmd, [], {
-        listeners: {
-            stdout: (data) => (output += data.toString()),
-        },
-        ignoreReturnCode: true,
-    });
-
-    return {
-        exitCode,
-        data: JSON.parse(output),
-    };
-}
-
 export default async function sizeLimit() {
     const { exitCode, data } = await cmd('npx size-limit --json');
 
@@ -94,9 +78,12 @@ export default async function sizeLimit() {
     console.log(report);
 
     return {
-        conclusion,
-        report,
-        data,
-        totalSize,
+        exitCode,
+        data: {
+            conclusion,
+            report,
+            data,
+            totalSize,
+        },
     };
 }

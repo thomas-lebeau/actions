@@ -6794,8 +6794,13 @@ if (pull_request) {
 const owner = repository.owner.login;
 const repo = repository.name;
 
-core$1.debug('ENV = ' + JSON.stringify(process.env, null, 2));
-core$1.debug('github.context = ' + JSON.stringify(github.context, null, 2));
+core$1.startGroup('ENV');
+core$1.debug(JSON.stringify(process.env, null, 2));
+core$1.endGroup();
+
+core$1.startGroup('Github Context');
+core$1.debug(JSON.stringify(github.context, null, 2));
+core$1.endGroup();
 
 const CHECK_STATUS = {
     QUEUED: 'queued',
@@ -6815,7 +6820,7 @@ function createCheck(name, head_sha = sha) {
 
 function updateCheck(
     check_run_id,
-    { title = '', summary = '', text, status, conclusion }
+    { title = '', summary = '', text, status, conclusion, annotations }
 ) {
     const options = {};
     const output = {
@@ -6828,6 +6833,7 @@ function updateCheck(
     if (!status && !conclusion) options.status = CHECK_STATUS.IN_PROGRESS;
 
     if (text) output.text = text;
+    if (annotations) output.annotations = annotations;
 
     return octokit.checks.update({
         owner,
@@ -6840,7 +6846,7 @@ function updateCheck(
 
 async function setStatus(
     name,
-    { title, text, status, summary, conclusion }
+    { title, text, status, summary, conclusion, annotations }
 ) {
     try {
         let { id } = JSON.parse(core$1.getState(name) || '{}');
@@ -6861,6 +6867,7 @@ async function setStatus(
             status,
             summary,
             conclusion,
+            annotations,
         });
 
         core$1.saveState(name, {

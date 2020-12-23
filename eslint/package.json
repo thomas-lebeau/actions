@@ -1,0 +1,11 @@
+{
+  "name": "eslint",
+  "version": "1.0.0",
+  "description": "> TODO: description",
+  "author": "Thomas Lebeau <lebeau.thomas@gmail.com>",
+  "homepage": "https://github.com/thomas-lebeau/actions#readme",
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^1.2.6"
+  }
+}
